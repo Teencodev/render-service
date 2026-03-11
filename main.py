@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 import asyncio
+import imageio_ffmpeg
 
 app = FastAPI(title="Pippit Watermark Remover")
 
@@ -78,25 +79,23 @@ def run_ffmpeg(input_path: str, output_path: str, delogo: dict) -> None:
     """
     Dùng ffmpeg delogo filter để xóa/blur watermark.
     delogo = {"x": ..., "y": ..., "w": ..., "h": ...}
-    
-    Nếu delogo không đủ, có thể thêm show=1 để debug vị trí trước.
     """
     x, y, w, h = delogo["x"], delogo["y"], delogo["w"], delogo["h"]
-    
-    # delogo filter — blur vùng watermark
     vf = f"delogo=x={x}:y={y}:w={w}:h={h}"
-    
+
+    ffmpeg_bin = imageio_ffmpeg.get_ffmpeg_exe()
+
     cmd = [
-        "ffmpeg", "-y",
+        ffmpeg_bin, "-y",
         "-i", input_path,
         "-vf", vf,
         "-c:v", "libx264",
-        "-crf", "23",          # chất lượng tốt
+        "-crf", "23",
         "-preset", "fast",
-        "-c:a", "copy",        # giữ nguyên audio
+        "-c:a", "copy",
         output_path
     ]
-    
+
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg failed:\n{result.stderr[-1000:]}")
@@ -118,9 +117,9 @@ def root():
 
 @app.get("/health")
 def health():
-    # Kiểm tra ffmpeg có sẵn không
     try:
-        result = subprocess.run(["ffmpeg", "-version"], capture_output=True, timeout=5)
+        ffmpeg_bin = imageio_ffmpeg.get_ffmpeg_exe()
+        result = subprocess.run([ffmpeg_bin, "-version"], capture_output=True, timeout=5)
         ffmpeg_ok = result.returncode == 0
     except:
         ffmpeg_ok = False
