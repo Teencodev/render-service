@@ -31,13 +31,15 @@ app.add_middleware(
 )
 
 # ── Cấu hình watermark Pippit ──────────────────────────────────────────────
-# Đây là tọa độ mặc định watermark Pippit (góc dưới phải)
-# Nếu sai, chỉnh lại X, Y, W, H theo video thực tế
+# Watermark Pippit nằm ở GÓC TRÊN TRÁI (logo + tên app)
+# x=10, y=10 : cách mép trái/trên 10px
+# w=180, h=60 : đủ rộng bao logo + chữ "Pippit"
+# Nếu vẫn còn sót, tăng w hoặc h thêm 20-30px
 WATERMARK_PRESETS = {
-    "bottom-right": {"x": "iw-150", "y": "ih-60",  "w": "140", "h": "50"},
-    "bottom-left":  {"x": "10",     "y": "ih-60",  "w": "140", "h": "50"},
-    "top-right":    {"x": "iw-150", "y": "10",     "w": "140", "h": "50"},
-    "top-left":     {"x": "10",     "y": "10",     "w": "140", "h": "50"},
+    "top-left":     {"x": "10",     "y": "10",     "w": "180", "h": "60"},  # ← DEFAULT
+    "top-right":    {"x": "iw-190", "y": "10",     "w": "180", "h": "60"},
+    "bottom-left":  {"x": "10",     "y": "ih-70",  "w": "180", "h": "60"},
+    "bottom-right": {"x": "iw-190", "y": "ih-70",  "w": "180", "h": "60"},
 }
 
 # Thư mục lưu file tạm trên server
@@ -46,7 +48,7 @@ TEMP_DIR = tempfile.gettempdir()
 # ── Models ─────────────────────────────────────────────────────────────────
 class RemoveRequest(BaseModel):
     video_url: str
-    position: Optional[str] = "bottom-right"
+    position: Optional[str] = "top-left"
     # Override tọa độ thủ công nếu muốn
     x: Optional[str] = None
     y: Optional[str] = None
