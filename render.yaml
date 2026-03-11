@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: pippit-watermark-remover
+    runtime: python
+    buildCommand: |
+      apt-get update && apt-get install -y ffmpeg
+      pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    # Free tier: 512MB RAM, shared CPU
+    # Đủ để xử lý video ngắn ~30s-2min
