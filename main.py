@@ -1,7 +1,5 @@
 """
-Pippit Watermark Remover — FastAPI + OpenCV inpainting
-Dùng thuật toán từ seedance-watermark-remover (auto-detect + TELEA inpaint)
-Không cần GPU, chạy trên Render free tier.
+
 
 Flow:
   POST /submit-job  → job_id ngay
